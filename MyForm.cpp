@@ -1,9 +1,9 @@
 #include "MyForm.h"
-#include <typeinfo>
+#include "adminPanel.h"
 using namespace System;
 using namespace System::Windows::Forms;
-int intsym[]{0,1,2,3,4,5,6,7,8,9};
 
+int intsym[]{0,1,2,3,4,5,6,7,8,9};
 [STAThreadAttribute]
 void main(cli::array<String^>^ args)
 {
@@ -113,6 +113,8 @@ inline System::Void Project2::MyForm::textBox1_KeyUp(System::Object^ sender, Sys
 }
 
 inline System::Void Project2::MyForm::button_Download_Click(System::Object^ sender, System::EventArgs^ e) {
+	
+	
 	String^ text1 = this->textBox1->Text;
 	this->textBox1->Text = "";
 	String^ connectionString = "Data Source=ARTTEAM-DESKTOP\\SQLEXPRESS;Initial Catalog=Academy;Integrated Security=True";
@@ -148,7 +150,13 @@ inline System::Void Project2::MyForm::button_Download_Click(System::Object^ send
 }
 
 inline System::Void Project2::MyForm::button_Add_Click(System::Object^ sender, System::EventArgs^ e) {
-
+	
+	if (global::valueX != true)
+	{
+		MessageBox::Show("У вас нет доступа", "Ошибка!");
+		return;
+	}
+	this->lb_userOrAdmin->Text = "Администратор";
 	if (dataGridView1->SelectedRows->Count != 1)
 	{
 		MessageBox::Show("Выберите одну строку для добавления!","Внимание!");
@@ -198,11 +206,19 @@ inline System::Void Project2::MyForm::button_Add_Click(System::Object^ sender, S
 
 inline System::Void Project2::MyForm::button_Update_Click(System::Object^ sender, System::EventArgs^ e) {
 
+	if (global::valueX != true)
+	{
+		MessageBox::Show("У вас нет доступа", "Ошибка!");
+		return;
+	}
+	this->lb_userOrAdmin->Text = "Администратор";
+
 	if (dataGridView1->SelectedRows->Count != 1)
 	{
 		MessageBox::Show("Выберите одну строку для добавления!", "Внимание!");
 		return;
 	}
+
 	int index = dataGridView1->SelectedRows[0]->Index;
 
 	if (dataGridView1->Rows[index]->Cells[0] == nullptr ||
@@ -245,6 +261,13 @@ inline System::Void Project2::MyForm::button_Update_Click(System::Object^ sender
 }
 
 inline System::Void Project2::MyForm::button_Delete_Click(System::Object^ sender, System::EventArgs^ e) {
+
+	if (global::valueX != true)
+	{
+		MessageBox::Show("У вас нет доступа", "Ошибка!");
+		return;
+	}
+	this->lb_userOrAdmin->Text = "Администратор";
 
 	if (dataGridView1->SelectedRows->Count != 1)
 	{
@@ -298,4 +321,27 @@ inline System::Void Project2::MyForm::button_Delete_Click(System::Object^ sender
 		MessageBox::Show(ex->Message);
 	}
 
+}
+
+inline System::Void Project2::MyForm::btn_adminPanel_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (global::valueX == true)
+	{	
+		if (MessageBox::Show("Вы уверены что хотите выйти?", "Вопрос", MessageBoxButtons::YesNo, MessageBoxIcon::Question) == System::Windows::Forms::DialogResult::No)
+		{
+			return;
+		}
+		else
+		{
+			global::valueX = false;
+			this->lb_userOrAdmin->Text = "Пользователь";
+			return;
+		}
+	}
+	adminPanel^ varAdminPanel = gcnew adminPanel();
+	varAdminPanel->ShowDialog();
+	if (global::valueX == true)
+	{
+		this->lb_userOrAdmin->Text = "Администратор";
+	}
+	return;
 }

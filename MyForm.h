@@ -1,13 +1,6 @@
 #pragma once
-#include <iostream>
-#include <string>
-
-
-
+//#include "adminPanel.h"
 using namespace std;
-int c;
-string arr[]{ "Alfa-Romeo", "Aurus", "Audi", "Mercedes-Benz", "Changan", "Volvo", "Chevrolet", "BMW", "Chery", "Citroen"};
-
 
 namespace Project2 {
 
@@ -18,19 +11,15 @@ namespace Project2 {
 	using namespace System::Data;
 	using namespace System::Drawing;
 	using namespace System::Data::SqlClient;
-
 	/// <summary>
 	/// Сводка для MyForm
 	/// </summary>
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 	public:
-		MyForm(void)
+		MyForm()
 		{
 			InitializeComponent();
-			//
-			//TODO: добавьте код конструктора
-			//
 		}
 
 	protected:
@@ -55,7 +44,6 @@ namespace Project2 {
 	private: System::Windows::Forms::ToolStripMenuItem^ button_Action;
 
 	private: System::Windows::Forms::ToolStripMenuItem^ button_Download;
-
 	private: System::Windows::Forms::ToolStripMenuItem^ button_Add;
 	private: System::Windows::Forms::ToolStripMenuItem^ button_Update;
 	private: System::Windows::Forms::ToolStripMenuItem^ button_Delete;
@@ -63,6 +51,12 @@ namespace Project2 {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ dgvName;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ dgvSurname;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ dgvScore;
+	private: System::Windows::Forms::ToolStripMenuItem^ btn_adminPanel;
+	public: System::Windows::Forms::Label^ lb_userOrAdmin;
+	private:
+
+	private:
+
 
 
 
@@ -107,6 +101,8 @@ namespace Project2 {
 			this->button_Add = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->button_Update = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->button_Delete = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->btn_adminPanel = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->lb_userOrAdmin = (gcnew System::Windows::Forms::Label());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->BeginInit();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -230,13 +226,13 @@ namespace Project2 {
 			this->button_Action->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(52)), static_cast<System::Int32>(static_cast<System::Byte>(52)),
 				static_cast<System::Int32>(static_cast<System::Byte>(52)));
 			this->button_Action->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
-			this->button_Action->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
+			this->button_Action->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(5) {
 				this->button_Download,
-					this->button_Add, this->button_Update, this->button_Delete
+					this->button_Add, this->button_Update, this->button_Delete, this->btn_adminPanel
 			});
 			this->button_Action->Font = (gcnew System::Drawing::Font(L"Yu Gothic UI Semibold", 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->button_Action->ForeColor = System::Drawing::Color::Coral;
+			this->button_Action->ForeColor = System::Drawing::Color::OliveDrab;
 			this->button_Action->Name = L"button_Action";
 			this->button_Action->Size = System::Drawing::Size(89, 24);
 			this->button_Action->Text = L"Действия";
@@ -245,30 +241,49 @@ namespace Project2 {
 			// 
 			this->button_Download->BackColor = System::Drawing::SystemColors::ButtonHighlight;
 			this->button_Download->Name = L"button_Download";
-			this->button_Download->Size = System::Drawing::Size(161, 26);
+			this->button_Download->Size = System::Drawing::Size(196, 26);
 			this->button_Download->Text = L"Загрузить";
 			this->button_Download->Click += gcnew System::EventHandler(this, &MyForm::button_Download_Click);
 			// 
 			// button_Add
 			// 
 			this->button_Add->Name = L"button_Add";
-			this->button_Add->Size = System::Drawing::Size(161, 26);
+			this->button_Add->Size = System::Drawing::Size(196, 26);
 			this->button_Add->Text = L"Добавить";
 			this->button_Add->Click += gcnew System::EventHandler(this, &MyForm::button_Add_Click);
 			// 
 			// button_Update
 			// 
 			this->button_Update->Name = L"button_Update";
-			this->button_Update->Size = System::Drawing::Size(161, 26);
+			this->button_Update->Size = System::Drawing::Size(196, 26);
 			this->button_Update->Text = L"Обновить";
 			this->button_Update->Click += gcnew System::EventHandler(this, &MyForm::button_Update_Click);
 			// 
 			// button_Delete
 			// 
 			this->button_Delete->Name = L"button_Delete";
-			this->button_Delete->Size = System::Drawing::Size(161, 26);
+			this->button_Delete->Size = System::Drawing::Size(196, 26);
 			this->button_Delete->Text = L"Удалить";
 			this->button_Delete->Click += gcnew System::EventHandler(this, &MyForm::button_Delete_Click);
+			// 
+			// btn_adminPanel
+			// 
+			this->btn_adminPanel->Name = L"btn_adminPanel";
+			this->btn_adminPanel->Size = System::Drawing::Size(196, 26);
+			this->btn_adminPanel->Text = L"Админ-панель";
+			this->btn_adminPanel->Click += gcnew System::EventHandler(this, &MyForm::btn_adminPanel_Click);
+			// 
+			// lb_userOrAdmin
+			// 
+			this->lb_userOrAdmin->AutoSize = true;
+			this->lb_userOrAdmin->Font = (gcnew System::Drawing::Font(L"Yu Gothic UI Semibold", 9, System::Drawing::FontStyle::Bold));
+			this->lb_userOrAdmin->ForeColor = System::Drawing::Color::OliveDrab;
+			this->lb_userOrAdmin->Location = System::Drawing::Point(570, 4);
+			this->lb_userOrAdmin->Name = L"lb_userOrAdmin";
+			this->lb_userOrAdmin->Size = System::Drawing::Size(107, 20);
+			this->lb_userOrAdmin->TabIndex = 7;
+			this->lb_userOrAdmin->Text = L"Пользователь";
+			this->lb_userOrAdmin->Click += gcnew System::EventHandler(this, &MyForm::label2_Click);
 			// 
 			// MyForm
 			// 
@@ -278,6 +293,7 @@ namespace Project2 {
 				static_cast<System::Int32>(static_cast<System::Byte>(52)));
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->ClientSize = System::Drawing::Size(702, 433);
+			this->Controls->Add(this->lb_userOrAdmin);
 			this->Controls->Add(this->dataGridView1);
 			this->Controls->Add(this->result);
 			this->Controls->Add(this->label1);
@@ -304,5 +320,8 @@ private: System::Void button_Download_Click(System::Object^ sender, System::Even
 private: System::Void button_Add_Click(System::Object^ sender, System::EventArgs^ e);
 private: System::Void button_Update_Click(System::Object^ sender, System::EventArgs^ e);
 private: System::Void button_Delete_Click(System::Object^ sender, System::EventArgs^ e);
+private: System::Void btn_adminPanel_Click(System::Object^ sender, System::EventArgs^ e);
+private: System::Void label2_Click(System::Object^ sender, System::EventArgs^ e) {
+}
 };
 }
