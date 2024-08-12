@@ -47,12 +47,23 @@ namespace Project2 {
 	private: System::Windows::Forms::ToolStripMenuItem^ button_Add;
 	private: System::Windows::Forms::ToolStripMenuItem^ button_Update;
 	private: System::Windows::Forms::ToolStripMenuItem^ button_Delete;
+
+
+
+
+	private: System::Windows::Forms::ToolStripMenuItem^ btn_adminPanel;
+	public: System::Windows::Forms::Label^ lb_userOrAdmin;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ dgvID;
+	public:
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ dgvName;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ dgvSurname;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ dgvScore;
-	private: System::Windows::Forms::ToolStripMenuItem^ btn_adminPanel;
-	public: System::Windows::Forms::Label^ lb_userOrAdmin;
+
+	public:
+
+
+
+
 	private:
 
 	private:
@@ -91,10 +102,6 @@ namespace Project2 {
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->result = (gcnew System::Windows::Forms::TextBox());
 			this->dataGridView1 = (gcnew System::Windows::Forms::DataGridView());
-			this->dgvID = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->dgvName = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->dgvSurname = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->dgvScore = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->button_Action = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->button_Download = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -103,6 +110,10 @@ namespace Project2 {
 			this->button_Delete = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->btn_adminPanel = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->lb_userOrAdmin = (gcnew System::Windows::Forms::Label());
+			this->dgvID = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->dgvName = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->dgvSurname = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->dgvScore = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->BeginInit();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -165,7 +176,7 @@ namespace Project2 {
 					this->dgvName, this->dgvSurname, this->dgvScore
 			});
 			this->dataGridView1->GridColor = System::Drawing::Color::Black;
-			this->dataGridView1->Location = System::Drawing::Point(71, 181);
+			this->dataGridView1->Location = System::Drawing::Point(12, 181);
 			this->dataGridView1->Name = L"dataGridView1";
 			this->dataGridView1->RowHeadersWidth = 51;
 			dataGridViewCellStyle1->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
@@ -178,36 +189,8 @@ namespace Project2 {
 			dataGridViewCellStyle1->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
 			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle1;
 			this->dataGridView1->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
-			this->dataGridView1->Size = System::Drawing::Size(545, 225);
+			this->dataGridView1->Size = System::Drawing::Size(678, 225);
 			this->dataGridView1->TabIndex = 5;
-			// 
-			// dgvID
-			// 
-			this->dgvID->HeaderText = L"ID";
-			this->dgvID->MinimumWidth = 6;
-			this->dgvID->Name = L"dgvID";
-			this->dgvID->Width = 125;
-			// 
-			// dgvName
-			// 
-			this->dgvName->HeaderText = L"Имя";
-			this->dgvName->MinimumWidth = 6;
-			this->dgvName->Name = L"dgvName";
-			this->dgvName->Width = 125;
-			// 
-			// dgvSurname
-			// 
-			this->dgvSurname->HeaderText = L"Фамилия";
-			this->dgvSurname->MinimumWidth = 6;
-			this->dgvSurname->Name = L"dgvSurname";
-			this->dgvSurname->Width = 125;
-			// 
-			// dgvScore
-			// 
-			this->dgvScore->HeaderText = L"Очки";
-			this->dgvScore->MinimumWidth = 6;
-			this->dgvScore->Name = L"dgvScore";
-			this->dgvScore->Width = 125;
 			// 
 			// menuStrip1
 			// 
@@ -236,6 +219,7 @@ namespace Project2 {
 			this->button_Action->Name = L"button_Action";
 			this->button_Action->Size = System::Drawing::Size(89, 24);
 			this->button_Action->Text = L"Действия";
+			this->button_Action->Click += gcnew System::EventHandler(this, &MyForm::button_Action_Click);
 			// 
 			// button_Download
 			// 
@@ -285,6 +269,34 @@ namespace Project2 {
 			this->lb_userOrAdmin->Text = L"Пользователь";
 			this->lb_userOrAdmin->Click += gcnew System::EventHandler(this, &MyForm::label2_Click);
 			// 
+			// dgvID
+			// 
+			this->dgvID->HeaderText = L"ID";
+			this->dgvID->MinimumWidth = 6;
+			this->dgvID->Name = L"dgvID";
+			this->dgvID->Width = 125;
+			// 
+			// dgvName
+			// 
+			this->dgvName->HeaderText = L"Имя";
+			this->dgvName->MinimumWidth = 6;
+			this->dgvName->Name = L"dgvName";
+			this->dgvName->Width = 125;
+			// 
+			// dgvSurname
+			// 
+			this->dgvSurname->HeaderText = L"Фамилия";
+			this->dgvSurname->MinimumWidth = 6;
+			this->dgvSurname->Name = L"dgvSurname";
+			this->dgvSurname->Width = 125;
+			// 
+			// dgvScore
+			// 
+			this->dgvScore->HeaderText = L"Очки";
+			this->dgvScore->MinimumWidth = 6;
+			this->dgvScore->Name = L"dgvScore";
+			this->dgvScore->Width = 125;
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
@@ -323,5 +335,6 @@ private: System::Void button_Delete_Click(System::Object^ sender, System::EventA
 private: System::Void btn_adminPanel_Click(System::Object^ sender, System::EventArgs^ e);
 private: System::Void label2_Click(System::Object^ sender, System::EventArgs^ e) {
 }
+private: System::Void button_Action_Click(System::Object^ sender, System::EventArgs^ e);
 };
 }

@@ -113,8 +113,6 @@ inline System::Void Project2::MyForm::textBox1_KeyUp(System::Object^ sender, Sys
 }
 
 inline System::Void Project2::MyForm::button_Download_Click(System::Object^ sender, System::EventArgs^ e) {
-	
-	
 	String^ text1 = this->textBox1->Text;
 	this->textBox1->Text = "";
 	String^ connectionString = "Data Source=ARTTEAM-DESKTOP\\SQLEXPRESS;Initial Catalog=Academy;Integrated Security=True";
@@ -286,6 +284,7 @@ inline System::Void Project2::MyForm::button_Delete_Click(System::Object^ sender
 	}
 
 	String^ id = dataGridView1->Rows[index]->Cells[0]->Value->ToString();
+	int mainID = Int32::Parse(id);
 	int nextID = Int32::Parse(id)+1;
 	
 	String^ s = Convert::ToString(nextID);
@@ -293,7 +292,7 @@ inline System::Void Project2::MyForm::button_Delete_Click(System::Object^ sender
 	String^ connectionString = "Data Source=ARTTEAM-DESKTOP\\SQLEXPRESS;Initial Catalog=Academy;Integrated Security=True";
 	SqlConnection^ connection = gcnew SqlConnection(connectionString);
 
-	String^ query2 = "UPDATE [Students] SET ID = "+ id +" WHERE ID = " + s;
+	String^ query2 = "UPDATE [Students] SET ID = "+ mainID +" WHERE ID = " + nextID;
 	SqlCommand^ command2;
 	if (dataGridView1->Rows[index + 1]->Cells[0] != nullptr)
 	{
@@ -344,4 +343,19 @@ inline System::Void Project2::MyForm::btn_adminPanel_Click(System::Object^ sende
 		this->lb_userOrAdmin->Text = "Администратор";
 	}
 	return;
+}
+
+inline System::Void Project2::MyForm::button_Action_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (global::valueX == false)
+	{
+		this->button_Add->Visible = false;
+		this->button_Update->Visible = false;
+		this->button_Delete->Visible = false;
+	}
+	else
+	{
+		this->button_Add->Visible = true;
+		this->button_Update->Visible = true;
+		this->button_Delete->Visible = true;
+	}
 }
