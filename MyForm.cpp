@@ -1,7 +1,9 @@
 #include "MyForm.h"
 #include "adminPanel.h"
+
 using namespace System;
 using namespace System::Windows::Forms;
+using namespace System::IO;
 
 int intsym[]{0,1,2,3,4,5,6,7,8,9};
 [STAThreadAttribute]
@@ -112,6 +114,55 @@ inline System::Void Project2::MyForm::textBox1_KeyUp(System::Object^ sender, Sys
 	}
 }
 
+inline System::Void Project2::MyForm::btn_Image_CellContentClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
+	int index = this->dataGridView1->SelectedCells[0]->RowIndex;
+	String^ imgloc;
+	String^ id = dataGridView1->Rows[index]->Cells[0]->Value->ToString();
+	String^ name = "Fu";
+	int a = Convert::ToInt32(id);
+	if (this->dataGridView1->Rows[index]->Cells[4]->Selected)
+	{
+		try
+		{
+			OpenFileDialog^ ofd = gcnew OpenFileDialog;
+			ofd->Title = "Выберите фото";
+			if (ofd->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+			{
+				imgloc = ofd->FileName->ToString();
+				cli::array<unsigned char, 1>^ image;
+				FileStream^ filestream = gcnew FileStream(imgloc, FileMode::Open, FileAccess::Read);
+				BinaryReader^ binaryreader = gcnew BinaryReader(filestream);
+				image = binaryreader->ReadBytes((int)filestream->Length);
+				
+				String^ connectionString = "Data Source=ARTTEAM-DESKTOP\\SQLEXPRESS;Initial Catalog=Academy;Integrated Security=True";
+				SqlConnection^ connection = gcnew SqlConnection(connectionString);
+				String^ query2 = "UPDATE [Students] SET Picture = '"+ image +"' WHERE ID = " + a;
+				SqlCommand^ command = gcnew SqlCommand(query2, connection);
+				command->Parameters->AddWithValue("@image", image);
+
+
+				try {
+					connection->Open();
+					command->ExecuteReader();
+
+					connection->Close();
+
+					MessageBox::Show("Фото загружено!");
+				}
+				catch (SqlException^ ex) {
+					MessageBox::Show(ex->Message);
+				}
+			}
+
+
+		}
+		catch (const std::exception&)
+		{
+			MessageBox::Show("Error!");
+		}
+	}
+}
+
 inline System::Void Project2::MyForm::button_Download_Click(System::Object^ sender, System::EventArgs^ e) {
 	String^ text1 = this->textBox1->Text;
 	this->textBox1->Text = "";
@@ -122,7 +173,7 @@ inline System::Void Project2::MyForm::button_Download_Click(System::Object^ send
 
 	SqlCommand^ command = gcnew SqlCommand(query, connection);
 	
-
+	
 	SqlDataAdapter^ dataAdapter = gcnew SqlDataAdapter(command);
 	DataSet^ dataSet = gcnew DataSet();
 
@@ -359,3 +410,6 @@ inline System::Void Project2::MyForm::button_Action_Click(System::Object^ sender
 		this->button_Delete->Visible = true;
 	}
 }
+
+
+

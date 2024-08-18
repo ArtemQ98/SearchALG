@@ -1,0 +1,2 @@
+D:/IT/TOP Academy/C/Project2-1/Project2/build/CMakeFiles/ALL_BUILD.dir
+D:/IT/TOP Academy/C/Project2-1/Project2/build/CMakeFiles/ZERO_CHECK.dir
