@@ -3,6 +3,8 @@
 
 using namespace System;
 using namespace System::Windows::Forms;
+using namespace System::Collections::Generic;
+using namespace System::Drawing;
 using namespace System::IO;
 
 int intsym[]{0,1,2,3,4,5,6,7,8,9};
@@ -24,7 +26,7 @@ inline System::Void Project2::MyForm::btnSearch_Click(System::Object^ sender, Sy
 	String^ connectionString = "Data Source=ARTTEAM-DESKTOP\\SQLEXPRESS;Initial Catalog=Academy;Integrated Security=True";
 
 	SqlConnection^ connection = gcnew SqlConnection(connectionString);
-	String^ query;
+	String^ query;  
 	if (text1 == "")
 	{
 		query = "SELECT * FROM Students";
@@ -32,7 +34,7 @@ inline System::Void Project2::MyForm::btnSearch_Click(System::Object^ sender, Sy
 	}
 	else
 	{
-		query = "SELECT * FROM Students WHERE (Name LIKE '%' + '" + text1 + "' + '%' OR CAST(Score	AS varchar(10)) = '" + text1 + "' OR CAST(ID AS varchar(10)) = '" + text1 + "')";
+		query = "SELECT * FROM Students WHERE (Name LIKE '%' + '" + text1 + "' + '%'OR Surname LIKE '%' + '" + text1 + "' + '%' OR CAST(Score	AS varchar(10)) = '" + text1 + "' OR CAST(ID AS varchar(10)) = '" + text1 + "')";
 	}
 	for (int i = 0; i < text1->Length; i++)
 	{
@@ -115,52 +117,56 @@ inline System::Void Project2::MyForm::textBox1_KeyUp(System::Object^ sender, Sys
 }
 
 inline System::Void Project2::MyForm::btn_Image_CellContentClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
-	int index = this->dataGridView1->SelectedCells[0]->RowIndex;
-	String^ imgloc;
-	String^ id = dataGridView1->Rows[index]->Cells[0]->Value->ToString();
-	String^ name = "Fu";
-	int a = Convert::ToInt32(id);
-	if (this->dataGridView1->Rows[index]->Cells[4]->Selected)
+	if (global::valueX == true)
 	{
-		try
+		int index = this->dataGridView1->SelectedCells[0]->RowIndex;
+		String^ imgloc;
+		String^ id = dataGridView1->Rows[index]->Cells[0]->Value->ToString();
+		String^ name = "Fu";
+		int a = Convert::ToInt32(id);
+		if (this->dataGridView1->Rows[index]->Cells[4]->Selected)
 		{
-			OpenFileDialog^ ofd = gcnew OpenFileDialog;
-			ofd->Title = "Выберите фото";
-			if (ofd->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+			try
 			{
-				imgloc = ofd->FileName->ToString();
-				cli::array<unsigned char, 1>^ image;
-				FileStream^ filestream = gcnew FileStream(imgloc, FileMode::Open, FileAccess::Read);
-				BinaryReader^ binaryreader = gcnew BinaryReader(filestream);
-				image = binaryreader->ReadBytes((int)filestream->Length);
-				
-				String^ connectionString = "Data Source=ARTTEAM-DESKTOP\\SQLEXPRESS;Initial Catalog=Academy;Integrated Security=True";
-				SqlConnection^ connection = gcnew SqlConnection(connectionString);
-				String^ query2 = "UPDATE [Students] SET Picture = '"+ image +"' WHERE ID = " + a;
-				SqlCommand^ command = gcnew SqlCommand(query2, connection);
-				command->Parameters->AddWithValue("@image", image);
+				OpenFileDialog^ ofd = gcnew OpenFileDialog;
+				ofd->Title = "Выберите фото";
+				if (ofd->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+				{
+					imgloc = ofd->FileName->ToString();
+					cli::array<unsigned char, 1>^ image;
+					FileStream^ filestream = gcnew FileStream(imgloc, FileMode::Open, FileAccess::Read);
+					BinaryReader^ binaryreader = gcnew BinaryReader(filestream);
+					image = binaryreader->ReadBytes((int)filestream->Length);
+
+					String^ connectionString = "Data Source=ARTTEAM-DESKTOP\\SQLEXPRESS;Initial Catalog=Academy;Integrated Security=True";
+					SqlConnection^ connection = gcnew SqlConnection(connectionString);
+					String^ query2 = "UPDATE [Students] SET Picture = '" + image + "' WHERE ID = " + a;
+					SqlCommand^ command = gcnew SqlCommand(query2, connection);
+					command->Parameters->AddWithValue("@image", image);
 
 
-				try {
-					connection->Open();
-					command->ExecuteReader();
+					try {
+						connection->Open();
+						command->ExecuteReader();
 
-					connection->Close();
+						connection->Close();
 
-					MessageBox::Show("Фото загружено!");
+						MessageBox::Show("Фото загружено!");
+					}
+					catch (SqlException^ ex) {
+						MessageBox::Show(ex->Message);
+					}
 				}
-				catch (SqlException^ ex) {
-					MessageBox::Show(ex->Message);
-				}
+
+
 			}
-
-
-		}
-		catch (const std::exception&)
-		{
-			MessageBox::Show("Error!");
+			catch (const std::exception&)
+			{
+				MessageBox::Show("Error!");
+			}
 		}
 	}
+	
 }
 
 inline System::Void Project2::MyForm::button_Download_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -182,12 +188,31 @@ inline System::Void Project2::MyForm::button_Download_Click(System::Object^ send
 		connection->Open();
 		dataGridView1->Rows->Clear();
 		SqlDataReader^ dbReader = command->ExecuteReader();
-		//dataAdapter->Fill(dataSet, "Students");
-		//dataGridView1->DataSource = dataSet->Tables["Students"];
 
 		while (dbReader->Read())
 		{
-			dataGridView1->Rows->Add(dbReader["ID"], dbReader["Name"], dbReader["Surname"], dbReader["Score"]);
+			// Получение двоичных данных изображения
+			cli::array<Byte>^ imageData = static_cast<cli::array<Byte>^>(dbReader["Picture"]);
+			Bitmap^ image = nullptr;
+			if (imageData != nullptr && imageData->Length > 0) {
+				try {
+					// Создание потока из двоичных данных
+					System::IO::MemoryStream^ ms = gcnew System::IO::MemoryStream(imageData);
+					// Используем Image::FromStream для создания изображения
+					image = safe_cast<System::Drawing::Bitmap^>(System::Drawing::Image::FromStream(ms));
+				}
+				catch (System::ArgumentException^ ex) {
+					// Обработка исключения, если данные изображения недействительны
+					System::Console::WriteLine("Ошибка при загрузке изображения: " + ex->Message);
+				}
+			}
+			/*int rowIndex = dataGridView1->Rows->Add();
+			dataGridView1->Rows[rowIndex]->Cells["ID"]->Value = dbReader["ID"];
+			dataGridView1->Rows[rowIndex]->Cells["Name"]->Value = dbReader["Name"];
+			dataGridView1->Rows[rowIndex]->Cells["Surname"]->Value = dbReader["Surname"];
+			dataGridView1->Rows[rowIndex]->Cells["Score"]->Value = dbReader["Score"];
+			dataGridView1->Rows[rowIndex]->Cells["Image"]->Value = image;*/
+			dataGridView1->Rows->Add(dbReader["ID"], dbReader["Name"], dbReader["Surname"], dbReader["Score"], image);
 		}
 
 		dbReader->Close();
@@ -376,6 +401,7 @@ inline System::Void Project2::MyForm::button_Delete_Click(System::Object^ sender
 inline System::Void Project2::MyForm::btn_adminPanel_Click(System::Object^ sender, System::EventArgs^ e) {
 	if (global::valueX == true)
 	{	
+		
 		if (MessageBox::Show("Вы уверены что хотите выйти?", "Вопрос", MessageBoxButtons::YesNo, MessageBoxIcon::Question) == System::Windows::Forms::DialogResult::No)
 		{
 			return;
@@ -383,15 +409,27 @@ inline System::Void Project2::MyForm::btn_adminPanel_Click(System::Object^ sende
 		else
 		{
 			global::valueX = false;
+			this->button_Add->Visible = false;
+			this->button_Update->Visible = false;
+			this->button_Delete->Visible = false;
+			this->dataGridView1->AllowUserToAddRows = false;
 			this->lb_userOrAdmin->Text = "Пользователь";
 			return;
 		}
+	}
+	else
+	{
+		
 	}
 	adminPanel^ varAdminPanel = gcnew adminPanel();
 	varAdminPanel->ShowDialog();
 	if (global::valueX == true)
 	{
 		this->lb_userOrAdmin->Text = "Администратор";
+		this->button_Add->Visible = true;
+		this->button_Update->Visible = true;
+		this->button_Delete->Visible = true;
+		this->dataGridView1->AllowUserToAddRows = true;
 	}
 	return;
 }
@@ -399,15 +437,11 @@ inline System::Void Project2::MyForm::btn_adminPanel_Click(System::Object^ sende
 inline System::Void Project2::MyForm::button_Action_Click(System::Object^ sender, System::EventArgs^ e) {
 	if (global::valueX == false)
 	{
-		this->button_Add->Visible = false;
-		this->button_Update->Visible = false;
-		this->button_Delete->Visible = false;
+		
 	}
 	else
 	{
-		this->button_Add->Visible = true;
-		this->button_Update->Visible = true;
-		this->button_Delete->Visible = true;
+		
 	}
 }
 

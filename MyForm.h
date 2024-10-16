@@ -58,7 +58,60 @@ namespace Project2 {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ dgvName;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ dgvSurname;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ dgvScore;
-	private: System::Windows::Forms::DataGridViewImageColumn^ dgvImage;
+	private: System::Windows::Forms::DataGridViewImageColumn^ image;
+
+	public:
+
+
+
+
+
+	public:
+
+
+
+
+
+	public:
+
+
+
+
+
+	public:
+
+
+
+
+
+	public:
+
+
+
+
+	public:
+
+
+
+
+
+	public:
+
+
+
+
+
+	public:
+
+
+
+
+
+	public:
+
+
+
+
 
 	public:
 
@@ -112,7 +165,7 @@ namespace Project2 {
 			this->dgvName = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->dgvSurname = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->dgvScore = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->dgvImage = (gcnew System::Windows::Forms::DataGridViewImageColumn());
+			this->image = (gcnew System::Windows::Forms::DataGridViewImageColumn());
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->button_Action = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->button_Download = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -181,7 +234,7 @@ namespace Project2 {
 			this->dataGridView1->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
 			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(5) {
 				this->dgvID,
-					this->dgvName, this->dgvSurname, this->dgvScore, this->dgvImage
+					this->dgvName, this->dgvSurname, this->dgvScore, this->image
 			});
 			this->dataGridView1->GridColor = System::Drawing::Color::Black;
 			this->dataGridView1->Location = System::Drawing::Point(12, 181);
@@ -196,8 +249,9 @@ namespace Project2 {
 			dataGridViewCellStyle1->SelectionForeColor = System::Drawing::Color::White;
 			dataGridViewCellStyle1->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
 			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle1;
+			this->dataGridView1->RowTemplate->Height = 50;
 			this->dataGridView1->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
-			this->dataGridView1->Size = System::Drawing::Size(678, 225);
+			this->dataGridView1->Size = System::Drawing::Size(665, 225);
 			this->dataGridView1->TabIndex = 5;
 			this->dataGridView1->CellContentClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::btn_Image_CellContentClick);
 			// 
@@ -229,12 +283,13 @@ namespace Project2 {
 			this->dgvScore->Name = L"dgvScore";
 			this->dgvScore->Width = 125;
 			// 
-			// dgvImage
+			// image
 			// 
-			this->dgvImage->HeaderText = L"Фото";
-			this->dgvImage->MinimumWidth = 6;
-			this->dgvImage->Name = L"dgvImage";
-			this->dgvImage->Width = 125;
+			this->image->AutoSizeMode = System::Windows::Forms::DataGridViewAutoSizeColumnMode::Fill;
+			this->image->HeaderText = L"dgvImage";
+			this->image->ImageLayout = System::Windows::Forms::DataGridViewImageCellLayout::Stretch;
+			this->image->MinimumWidth = 6;
+			this->image->Name = L"image";
 			// 
 			// menuStrip1
 			// 
@@ -244,7 +299,7 @@ namespace Project2 {
 			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->button_Action });
 			this->menuStrip1->Location = System::Drawing::Point(0, 0);
 			this->menuStrip1->Name = L"menuStrip1";
-			this->menuStrip1->Size = System::Drawing::Size(702, 28);
+			this->menuStrip1->Size = System::Drawing::Size(686, 28);
 			this->menuStrip1->TabIndex = 6;
 			this->menuStrip1->Text = L"menuStrip1";
 			// 
@@ -278,6 +333,7 @@ namespace Project2 {
 			this->button_Add->Name = L"button_Add";
 			this->button_Add->Size = System::Drawing::Size(196, 26);
 			this->button_Add->Text = L"Добавить";
+			this->button_Add->Visible = false;
 			this->button_Add->Click += gcnew System::EventHandler(this, &MyForm::button_Add_Click);
 			// 
 			// button_Update
@@ -285,6 +341,7 @@ namespace Project2 {
 			this->button_Update->Name = L"button_Update";
 			this->button_Update->Size = System::Drawing::Size(196, 26);
 			this->button_Update->Text = L"Обновить";
+			this->button_Update->Visible = false;
 			this->button_Update->Click += gcnew System::EventHandler(this, &MyForm::button_Update_Click);
 			// 
 			// button_Delete
@@ -292,6 +349,7 @@ namespace Project2 {
 			this->button_Delete->Name = L"button_Delete";
 			this->button_Delete->Size = System::Drawing::Size(196, 26);
 			this->button_Delete->Text = L"Удалить";
+			this->button_Delete->Visible = false;
 			this->button_Delete->Click += gcnew System::EventHandler(this, &MyForm::button_Delete_Click);
 			// 
 			// btn_adminPanel
@@ -320,7 +378,7 @@ namespace Project2 {
 			this->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(52)), static_cast<System::Int32>(static_cast<System::Byte>(52)),
 				static_cast<System::Int32>(static_cast<System::Byte>(52)));
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
-			this->ClientSize = System::Drawing::Size(702, 433);
+			this->ClientSize = System::Drawing::Size(686, 433);
 			this->Controls->Add(this->lb_userOrAdmin);
 			this->Controls->Add(this->dataGridView1);
 			this->Controls->Add(this->result);
