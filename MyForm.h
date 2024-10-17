@@ -2,6 +2,8 @@
 //#include "adminPanel.h"
 using namespace std;
 
+
+
 namespace Project2 {
 
 	using namespace System;
@@ -17,6 +19,7 @@ namespace Project2 {
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 	public:
+		static String^ imgloc;
 		MyForm()
 		{
 			InitializeComponent();
@@ -249,7 +252,7 @@ namespace Project2 {
 			dataGridViewCellStyle1->SelectionForeColor = System::Drawing::Color::White;
 			dataGridViewCellStyle1->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
 			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle1;
-			this->dataGridView1->RowTemplate->Height = 50;
+			this->dataGridView1->RowTemplate->Height = 80;
 			this->dataGridView1->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
 			this->dataGridView1->Size = System::Drawing::Size(665, 225);
 			this->dataGridView1->TabIndex = 5;
@@ -299,7 +302,7 @@ namespace Project2 {
 			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->button_Action });
 			this->menuStrip1->Location = System::Drawing::Point(0, 0);
 			this->menuStrip1->Name = L"menuStrip1";
-			this->menuStrip1->Size = System::Drawing::Size(686, 28);
+			this->menuStrip1->Size = System::Drawing::Size(695, 28);
 			this->menuStrip1->TabIndex = 6;
 			this->menuStrip1->Text = L"menuStrip1";
 			// 
@@ -378,7 +381,7 @@ namespace Project2 {
 			this->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(52)), static_cast<System::Int32>(static_cast<System::Byte>(52)),
 				static_cast<System::Int32>(static_cast<System::Byte>(52)));
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
-			this->ClientSize = System::Drawing::Size(686, 433);
+			this->ClientSize = System::Drawing::Size(695, 433);
 			this->Controls->Add(this->lb_userOrAdmin);
 			this->Controls->Add(this->dataGridView1);
 			this->Controls->Add(this->result);

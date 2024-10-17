@@ -65,7 +65,21 @@ inline System::Void Project2::MyForm::btnSearch_Click(System::Object^ sender, Sy
 
 		while (dbReader->Read())
 		{
-			dataGridView1->Rows->Add(dbReader["ID"], dbReader["Name"], dbReader["Surname"], dbReader["Score"]);
+			cli::array<Byte>^ imageData = static_cast<cli::array<Byte>^>(dbReader["Picture"]);
+			Bitmap^ image = nullptr;
+			if (imageData != nullptr && imageData->Length > 0) {
+				try {
+					// Создание потока из двоичных данных
+					System::IO::MemoryStream^ ms = gcnew System::IO::MemoryStream(imageData);
+					// Используем Image::FromStream для создания изображения
+					image = safe_cast<System::Drawing::Bitmap^>(System::Drawing::Image::FromStream(ms));
+				}
+				catch (System::ArgumentException^ ex) {
+					// Обработка исключения, если данные изображения недействительны
+					System::Console::WriteLine("Ошибка при загрузке изображения: " + ex->Message);
+				}
+			}
+			dataGridView1->Rows->Add(dbReader["ID"], dbReader["Name"], dbReader["Surname"], dbReader["Score"], image);
 		}
 
 		dbReader->Close();
@@ -119,52 +133,55 @@ inline System::Void Project2::MyForm::textBox1_KeyUp(System::Object^ sender, Sys
 inline System::Void Project2::MyForm::btn_Image_CellContentClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
 	if (global::valueX == true)
 	{
-		int index = this->dataGridView1->SelectedCells[0]->RowIndex;
-		String^ imgloc;
-		String^ id = dataGridView1->Rows[index]->Cells[0]->Value->ToString();
-		String^ name = "Fu";
+		OpenFileDialog^ ofd = gcnew OpenFileDialog;
+		ofd->Title = "Выберите фото";
+		if (ofd->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+		{
+			imgloc = ofd->FileName->ToString();
+		}
+
+		/*int index = this->dataGridView1->SelectedCells[0]->RowIndex;
+		String^ id; 
+		if (dataGridView1->Rows[index]->Cells[0]->Value == nullptr)
+		{
+			MessageBox::Show("Сначала загрузите данные, фото в последнюю очередь!");
+			return;
+		}
+		else
+		{
+			id = dataGridView1->Rows[index]->Cells[0]->Value->ToString();
+
+		}
+
 		int a = Convert::ToInt32(id);
 		if (this->dataGridView1->Rows[index]->Cells[4]->Selected)
 		{
-			try
-			{
-				OpenFileDialog^ ofd = gcnew OpenFileDialog;
-				ofd->Title = "Выберите фото";
-				if (ofd->ShowDialog() == System::Windows::Forms::DialogResult::OK)
-				{
-					imgloc = ofd->FileName->ToString();
-					cli::array<unsigned char, 1>^ image;
-					FileStream^ filestream = gcnew FileStream(imgloc, FileMode::Open, FileAccess::Read);
-					BinaryReader^ binaryreader = gcnew BinaryReader(filestream);
-					image = binaryreader->ReadBytes((int)filestream->Length);
+			String^ connectionString = "Data Source=ARTTEAM-DESKTOP\\SQLEXPRESS;Initial Catalog=Academy;Integrated Security=True";
+			SqlConnection^ connection = gcnew SqlConnection(connectionString);
+			String^ query;
+			query = "UPDATE Students SET Picture = ( SELECT * FROM OPENROWSET(BULK '"+ imgloc +"', SINGLE_BLOB) AS Image) WHERE ID = " + id;
 
-					String^ connectionString = "Data Source=ARTTEAM-DESKTOP\\SQLEXPRESS;Initial Catalog=Academy;Integrated Security=True";
-					SqlConnection^ connection = gcnew SqlConnection(connectionString);
-					String^ query2 = "UPDATE [Students] SET Picture = '" + image + "' WHERE ID = " + a;
-					SqlCommand^ command = gcnew SqlCommand(query2, connection);
-					command->Parameters->AddWithValue("@image", image);
+			SqlCommand^ command = gcnew SqlCommand(query, connection);
 
 
-					try {
-						connection->Open();
-						command->ExecuteReader();
-
-						connection->Close();
-
-						MessageBox::Show("Фото загружено!");
-					}
-					catch (SqlException^ ex) {
-						MessageBox::Show(ex->Message);
-					}
-				}
+			SqlDataAdapter^ dataAdapter = gcnew SqlDataAdapter(command);
+			DataSet^ dataSet = gcnew DataSet();
 
 
+			try {
+				connection->Open();
+				this->dataGridView1->Rows->Clear();
+				command->ExecuteReader();
+
+				connection->Close();
+
+				MessageBox::Show("Фото загружено!");
+				
 			}
-			catch (const std::exception&)
-			{
-				MessageBox::Show("Error!");
+			catch (SqlException^ ex) {
+					MessageBox::Show(ex->Message);
 			}
-		}
+		}*/
 	}
 	
 }
@@ -191,6 +208,7 @@ inline System::Void Project2::MyForm::button_Download_Click(System::Object^ send
 
 		while (dbReader->Read())
 		{
+		
 			// Получение двоичных данных изображения
 			cli::array<Byte>^ imageData = static_cast<cli::array<Byte>^>(dbReader["Picture"]);
 			Bitmap^ image = nullptr;
@@ -206,12 +224,6 @@ inline System::Void Project2::MyForm::button_Download_Click(System::Object^ send
 					System::Console::WriteLine("Ошибка при загрузке изображения: " + ex->Message);
 				}
 			}
-			/*int rowIndex = dataGridView1->Rows->Add();
-			dataGridView1->Rows[rowIndex]->Cells["ID"]->Value = dbReader["ID"];
-			dataGridView1->Rows[rowIndex]->Cells["Name"]->Value = dbReader["Name"];
-			dataGridView1->Rows[rowIndex]->Cells["Surname"]->Value = dbReader["Surname"];
-			dataGridView1->Rows[rowIndex]->Cells["Score"]->Value = dbReader["Score"];
-			dataGridView1->Rows[rowIndex]->Cells["Image"]->Value = image;*/
 			dataGridView1->Rows->Add(dbReader["ID"], dbReader["Name"], dbReader["Surname"], dbReader["Score"], image);
 		}
 
@@ -241,7 +253,8 @@ inline System::Void Project2::MyForm::button_Add_Click(System::Object^ sender, S
 	if (dataGridView1->Rows[index]->Cells[0] == nullptr ||
 		dataGridView1->Rows[index]->Cells[1] == nullptr ||
 		dataGridView1->Rows[index]->Cells[2] == nullptr ||
-		dataGridView1->Rows[index]->Cells[3] == nullptr)
+		dataGridView1->Rows[index]->Cells[3] == nullptr ||
+		dataGridView1->Rows[index]->Cells[4] == nullptr)
 	{
 		MessageBox::Show("Не все данные введены!", "Внимание!");
 		return;
@@ -255,8 +268,10 @@ inline System::Void Project2::MyForm::button_Add_Click(System::Object^ sender, S
 
 	String^ connectionString = "Data Source=ARTTEAM-DESKTOP\\SQLEXPRESS;Initial Catalog=Academy;Integrated Security=True";
 	SqlConnection^ connection = gcnew SqlConnection(connectionString);
-	String^ query = "INSERT INTO [Students] VALUES ("+ id +", '"+ name +"', '"+ surname +"', "+ score +")";
+	String^ query2 = "UPDATE Students SET Picture = ( SELECT * FROM OPENROWSET(BULK '" + imgloc + "', SINGLE_BLOB) AS Image) WHERE ID = " + id;
+	String^ query = "INSERT INTO [Students] VALUES ("+ id +", '"+ name +"', '"+ surname +"', "+ score +", (SELECT * FROM OPENROWSET(BULK '" + imgloc + "', SINGLE_BLOB) AS Image))";
 	SqlCommand^ command = gcnew SqlCommand(query, connection);
+	SqlCommand^ command2 = gcnew SqlCommand(query2, connection);
 
 	try {
 		connection->Open();
@@ -264,6 +279,10 @@ inline System::Void Project2::MyForm::button_Add_Click(System::Object^ sender, S
 		{
 			MessageBox::Show("Ошибка выполнения запроса", "Ошибка!");
 		}
+		/*if (command2->ExecuteNonQuery() != 1)
+		{
+			MessageBox::Show("Ошибка добавления фотографии", "Ошибка!");
+		}*/
 		else
 		{
 			MessageBox::Show("Данные были добавлены", "Готово!");
@@ -298,6 +317,7 @@ inline System::Void Project2::MyForm::button_Update_Click(System::Object^ sender
 	if (dataGridView1->Rows[index]->Cells[0] == nullptr ||
 		dataGridView1->Rows[index]->Cells[1] == nullptr ||
 		dataGridView1->Rows[index]->Cells[2] == nullptr ||
+		dataGridView1->Rows[index]->Cells[3] == nullptr ||
 		dataGridView1->Rows[index]->Cells[3] == nullptr)
 	{
 		MessageBox::Show("Не все данные введены!", "Внимание!");
@@ -345,7 +365,7 @@ inline System::Void Project2::MyForm::button_Delete_Click(System::Object^ sender
 
 	if (dataGridView1->SelectedRows->Count != 1)
 	{
-		MessageBox::Show("Выберите одну строку для добавления!", "Внимание!");
+		MessageBox::Show("Выберите одну строку для удаления!", "Внимание!");
 		return;
 	}
 	int index = dataGridView1->SelectedRows[0]->Index;
@@ -353,7 +373,8 @@ inline System::Void Project2::MyForm::button_Delete_Click(System::Object^ sender
 	if (dataGridView1->Rows[index]->Cells[0] == nullptr ||
 		dataGridView1->Rows[index]->Cells[1] == nullptr ||
 		dataGridView1->Rows[index]->Cells[2] == nullptr ||
-		dataGridView1->Rows[index]->Cells[3] == nullptr)
+		dataGridView1->Rows[index]->Cells[3] == nullptr ||
+		dataGridView1->Rows[index]->Cells[4] == nullptr)
 	{
 		MessageBox::Show("Не все данные введены!", "Внимание!");
 		return;
