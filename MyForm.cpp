@@ -259,7 +259,14 @@ inline System::Void Project2::MyForm::button_Add_Click(System::Object^ sender, S
 		MessageBox::Show("Не все данные введены!", "Внимание!");
 		return;
 	}
-	String^ id = dataGridView1->Rows[index-1]->Cells[0]->Value->ToString();
+	String^ id;
+	try {
+		id = dataGridView1->Rows[index - 1]->Cells[0]->Value->ToString();
+	}
+	catch (System::ArgumentOutOfRangeException^ ex) {
+		MessageBox::Show("Вы пытаетесь добавить уже существующую строку!", "Внимание!");
+		return;
+	}
 	int i = Int32::Parse(id) + 1;
 	id = Convert::ToString(i);
 	String^ name = dataGridView1->Rows[index]->Cells[1]->Value->ToString();
@@ -287,7 +294,7 @@ inline System::Void Project2::MyForm::button_Add_Click(System::Object^ sender, S
 		{
 			MessageBox::Show("Данные были добавлены", "Готово!");
 		}
-
+		imgloc = nullptr;
 		connection->Close();
 	}
 	catch (SqlException^ ex) {
@@ -318,7 +325,7 @@ inline System::Void Project2::MyForm::button_Update_Click(System::Object^ sender
 		dataGridView1->Rows[index]->Cells[1] == nullptr ||
 		dataGridView1->Rows[index]->Cells[2] == nullptr ||
 		dataGridView1->Rows[index]->Cells[3] == nullptr ||
-		dataGridView1->Rows[index]->Cells[3] == nullptr)
+		dataGridView1->Rows[index]->Cells[4] == nullptr)
 	{
 		MessageBox::Show("Не все данные введены!", "Внимание!");
 		return;
@@ -331,7 +338,16 @@ inline System::Void Project2::MyForm::button_Update_Click(System::Object^ sender
 
 	String^ connectionString = "Data Source=ARTTEAM-DESKTOP\\SQLEXPRESS;Initial Catalog=Academy;Integrated Security=True";
 	SqlConnection^ connection = gcnew SqlConnection(connectionString);
-	String^ query = "UPDATE [Students] SET Name = '"+ name +"', Surname = '"+ surname +"', Score = "+ score +" WHERE ID = "+ id;
+	String^ query;
+	if (imgloc == nullptr)
+	{
+		query = "UPDATE [Students] SET Name = '" + name + "', Surname = '" + surname + "', Score = " + score + " WHERE ID = " + id;
+	}
+	else
+	{
+		query = "UPDATE [Students] SET Name = '" + name + "', Surname = '" + surname + "', Score = " + score + ", Picture = (SELECT * FROM OPENROWSET(BULK '" + imgloc + "', SINGLE_BLOB) AS Image) WHERE ID = " + id;
+
+	}
 	SqlCommand^ command = gcnew SqlCommand(query, connection);
 
 
@@ -345,7 +361,7 @@ inline System::Void Project2::MyForm::button_Update_Click(System::Object^ sender
 		{
 			MessageBox::Show("Данные были изменены!", "Готово!");
 		}
-
+		imgloc = nullptr;
 		connection->Close();
 	}
 	catch (SqlException^ ex) {
@@ -407,10 +423,7 @@ inline System::Void Project2::MyForm::button_Delete_Click(System::Object^ sender
 		{
 			MessageBox::Show("Данные были удалены!", "Готово!");
 		}
-		if (command2->ExecuteNonQuery() < 0)
-		{
-			MessageBox::Show("Ошибка выполнения запроса", "Ошибка!");
-		}
+		command2->ExecuteNonQuery();
 		connection->Close();
 	}
 	catch (SqlException^ ex) {
